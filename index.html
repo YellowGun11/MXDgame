@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            padding: 0;
+            margin: 0;
+        }
+        .mainScreen{
+            position: relative;
+            margin: 0 auto;
+            width: 1200px;
+            height: 630px;
+            background: url("images/bg.jpg") no-repeat;
+            background-size: cover;
+        }
+        .menuScreen{
+            width: 100%;
+            height: 100%;
+            background: url("images/readyBg.jpg") center bottom no-repeat;
+            background-size: cover;
+            overflow: hidden;
+            /*display: none;*/
+
+        }
+        .star_btn{
+            margin-top: 350px;
+            margin-left: 415px;
+            width: 150px;
+            height: 60px;
+            cursor: pointer;
+        }
+        .star_btn>img{
+            width: 100%;
+            height: 100%;
+        }
+        .skill_bg{
+            position: absolute;
+            top: -120px;
+            width: 1000px;
+            height: 100px;
+        }
+        .skill_bg>img{
+            width: 1000px;
+            height: 500px;
+        }
+        .score_box{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: url("images/ui/RunnerGame.gif") no-repeat;
+            background-size: 139px 50px;
+            width: 139px;
+            height: 50px;
+            overflow: hidden;
+            display: none;
+        }
+        .player_infor{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100px;
+            display: none;
+        }
+        .head_icon{
+            position: absolute;
+            top:10px;
+            left: 25px;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+        }
+        .infor_box{
+            position: absolute;
+            top:0;
+            left: 0;
+            width: 280px;
+            height: 100px;
+        }
+
+        .score_content{
+            margin-top: 25px;
+            margin-left: 45px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .hp{
+            position: absolute;
+            top: 37px;
+            left: 96px;
+            width: 156px;
+            height: 8px;
+            background-color: red;
+            border-radius: 5px;
+        }
+        .mp{
+            position: absolute;
+            top: 52px;
+            left: 96px;
+            width: 145px;
+            height: 8px;
+            background-color:blue;
+            border-radius: 5px;
+        }
+        .power{
+            position: absolute;
+            top: 67px;
+            left: 105px;
+            width: 130px;
+            height: 10px;
+            border-radius: 5px;
+        }
+        .big_skill{
+            position: absolute;
+            top: -70px;
+            display: none;
+            z-index: 5;
+        }
+        .pause_icon{
+            position: absolute;
+            top: 5px;
+            right: 200px;
+            cursor: pointer;
+            display: none;
+        }
+        .play_icon{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            z-index: 10;
+            margin-top: -85px;
+            margin-left: -85px;
+            cursor: pointer;
+            display: none;
+        }
+        .game_over{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -98px;
+            margin-left: -108.5px;
+            width: 217px;
+            height: 196px;
+            z-index: 11;
+            overflow: hidden;
+            background: url("images/ui/tipBg.png") no-repeat;
+            background-size: cover;
+            display: none;
+        }
+        .game_over>h1{
+            margin-top: 25px;
+            margin-left: 25px;
+        }
+        .my_score{
+            color: red;
+            margin-top: 25px;
+            margin-left: 35px;
+            font-size: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainScreen">
+        <div class="menuScreen">
+            <div class="star_btn" onclick="starGame()">
+                <img src="images/start.gif" alt="">
+            </div>
+            <div class="skill_bg">
+                <img src="images/skill.gif" alt="">
+            </div>
+        </div>
+        <div class="player_infor">
+            <img class="head_icon" src="images/ui/head.jpg" alt="">
+            <img class="infor_box" src="images/ui/1.png" alt="">
+            <div class="hp"></div>
+            <div class="mp"></div>
+            <img class="power" src="images/ui/boom/boom3.png" alt="">
+        </div>
+        <div class="score_box">
+            <p class="score_content">0</p>
+        </div>
+        <div class="big_skill">
+            <img src="images/skill.gif" alt="">
+        </div>
+        <div class="pause_icon" onclick="pauseGame()">
+            <img src="images/ui/pause.png" alt="" width="70" height="70">
+        </div>
+        <div class="play_icon" onclick="playGame()">
+            <img src="images/ui/play.png" alt="" width="170" height="170">
+        </div>
+        <div class="game_over">
+            <h1>最终得分:</h1>
+            <p class="my_score">0</p>
+        </div>
+    </div>
+
+
+    <script>
+        var mainScreen=document.getElementsByClassName("mainScreen")[0];
+        var scoreShow=document.getElementsByClassName("score_box")[0];
+        var scoreContent=document.getElementsByClassName("score_content")[0];
+        var playerInfor=document.getElementsByClassName("player_infor")[0];
+        var bigSkill=document.getElementsByClassName("big_skill")[0];
+        var hps=document.getElementsByClassName("hp")[0];
+        hps.style.width = 156 + "px";
+        var hpLength = parseInt(hps.style.width);
+        var powerImg = document.getElementsByClassName("power")[0];
+        var pauseBtn=document.getElementsByClassName("pause_icon")[0];
+        var playBtn=document.getElementsByClassName("play_icon")[0];
+        var gameOver=document.getElementsByClassName("game_over")[0];
+        var myScore=document.getElementsByClassName("my_score")[0];
+
+        var playerMove;
+        var enemyCreate;
+        var enemyMove;
+        var bulletMove;
+        var bulletMoveBoss;
+        //开始游戏按钮
+        function starGame() {
+            document.getElementsByClassName("menuScreen")[0].style.display="none";
+            pauseBtn.style.display="block";
+            scoreShow.style.display="block";
+            playerInfor.style.display="block";
+            createPlayer();
+            continueTime();
+        }
+
+        //暂停按钮
+        function pauseGame() {
+            stopTime();
+            playBtn.style.display="block";
+
+        }
+        //继续按钮
+        function playGame() {
+            continueTime();
+            playBtn.style.display="none";
+        }
+        //暂停函数
+        function stopTime() {
+            clearInterval(playerMove);
+            clearInterval(enemyCreate);
+            clearInterval(enemyMove);
+            clearInterval(bulletMove);
+            // clearInterval(isboss);
+        }
+        //继续函数
+        function continueTime() {
+            playerMove=setInterval(movePlayer,10);
+            enemyCreate=setInterval(createEnemy,2000);
+            enemyMove=setInterval(moveEnemy,100);
+            bulletMove=setInterval(moveBullet,10);
+            bulletMoveBoss=setInterval(moveBossBullet,100);
+        }
+        // 玩家模型
+        var player;
+        function PlayerModel(imgSrc,speed) {
+            this.imgNode = document.createElement("img");
+            this.imgSrc = imgSrc;
+            this.speed = speed ;
+            this.isdead = false;
+            this.deadTime=200;
+            this.skill=3;
+            this.score = 0;          //得分
+            this.atk = 1;            //攻击力
+            this.power = 0;          //能量条
+            this.bloodVolume =100;   //血量
+            this.init = function () {
+                this.imgNode.src = this.imgSrc;
+                this.imgNode.style.position = "absolute";
+                this.imgNode.style.top = 300 + "px";
+                this.imgNode.style.left = 50 + "px";
+                mainScreen.appendChild(this.imgNode);
+            };
+            this.init();
+        }
+
+        //敌方怪物模型
+        function EnemyModel(imgSrc,enemyType,x,y,speed,deadTime,life) {
+            this.imgNode = document.createElement("img");
+            this.imgSrc = imgSrc;
+            this.x = x;
+            this.y = y;
+            this.enemyType =enemyType;      //怪物类型
+            this.isDead=false;
+            this.treasureNumber=0;          //宝物效果，1为加血，2为加攻击力，3为速度
+            this.hasTreasure=false;         //是否有宝物
+            this.deadTime=deadTime;
+            this.life=life;
+            this.speed = speed ;
+            this.move = function () {
+                this.imgNode.style.left = parseInt(this.imgNode.style.left) - this.speed + "px";
+            };
+            this.init = function () {
+                this.imgNode.src = this.imgSrc;
+                this.imgNode.style.position = "absolute";
+                this.imgNode.style.top = this.y + "px";
+                this.imgNode.style.left = this.x + "px";
+                mainScreen.appendChild(this.imgNode);
+            };
+            this.init();
+        }
+
+        //boss技能模型
+        function BossBulletModel(imgSrc,x,y,speed) {
+            this.imgNode = document.createElement("img");
+            this.imgSrc = imgSrc;
+            this.x = x;
+            this.y = y;
+            this.isDead=false;
+            this.deadTime=5;
+            this.speed = speed ;
+            this.move = function () {
+                this.imgNode.style.left = parseInt(this.imgNode.style.left) - this.speed + "px";
+            };
+            this.init = function () {
+                this.imgNode.src = this.imgSrc;
+                this.imgNode.style.position = "absolute";
+                this.imgNode.style.top = this.y + "px";
+                this.imgNode.style.left = this.x + "px";
+                mainScreen.appendChild(this.imgNode);
+            };
+            this.init();
+        }
+
+        //boss技能移动
+        function moveBossBullet() {
+            for (let i=0;i<bulletBossArray.length;i++){
+                if(bulletBossArray[i].isDead == true){
+                    bulletBossArray[i].deadTime-=1;
+                    if (bulletBossArray[i].deadTime==1){
+                        mainScreen.removeChild(bulletBossArray[i].imgNode);
+                        bulletBossArray.splice(i,1);
+                    }
+                }
+                else {
+                    if(parseInt(bulletBossArray[i].imgNode.style.left)<10){
+                        mainScreen.removeChild(bulletBossArray[i].imgNode);
+                        bulletBossArray.splice(i,1);
+                    }
+                    else {
+                        bulletBossArray[i].move();
+                    }
+                }
+
+            }
+        }
+
+        //子弹模型
+        function BulletModel(imgSrc,x,y,speed) {
+            this.imgNode = document.createElement("img");
+            this.imgSrc = imgSrc;
+            this.x = x;
+            this.y = y;
+            this.isDead=false;
+            this.isdead = false;
+            this.deadTime = 10;
+            this.speed = speed;
+            this.move = function () {
+                this.imgNode.style.left = parseInt(this.imgNode.style.left) + this.speed + "px";
+            };
+            this.init = function () {
+                this.imgNode.src = this.imgSrc;
+                this.imgNode.style.position = "absolute";
+                this.imgNode.style.top = this.y + "px";
+                this.imgNode.style.left = this.x + "px";
+                mainScreen.appendChild(this.imgNode);
+            };
+            this.init();
+        }
+
+        //生成子弹
+        var bulletArray=[];
+        function createBullet(x,y) {
+            if (player.score<=50){
+                let bullet = new BulletModel("images/dragon/small/att.gif",x,y,10);
+                bulletArray.push(bullet);
+            }
+            if(player.score>50&&player.score<=100) {
+                let bullet = new BulletModel("images/dragon/middle/att.gif",x,y,10);
+                bulletArray.push(bullet);
+            }
+            if(player.score>100&&player.score<=150){
+                let bullet = new BulletModel("images/dragon/large/att.gif",x,y,10);
+                bulletArray.push(bullet);
+            }
+            if(player.score>150){
+                let bullet = new BulletModel("images/dragon/final/att.gif",x,y,10);
+                bulletArray.push(bullet);
+            }
+        }
+        //子弹移动
+        function moveBullet() {
+            for (let i=0;i<bulletArray.length;i++){
+                if (bulletArray[i].isdead==true){
+                    bulletArray[i].deadTime--;
+                    if (bulletArray[i].deadTime==1){
+                        mainScreen.removeChild(bulletArray[i].imgNode);
+                        bulletArray.splice(i,1);
+                    }
+                }
+                else {
+                    if(parseInt(bulletArray[i].imgNode.style.left)>1000){
+                        mainScreen.removeChild(bulletArray[i].imgNode);
+                        bulletArray.splice(i,1);
+                    }
+                    else {
+                        bulletArray[i].move();
+                        isCrash();
+                    }
+
+                }
+
+            }
+        }
+
+        //生成敌方怪物
+        var enemyArray=[];
+        var bossArray=[];
+        var timeBoss=1;
+        var timePlane =5;
+        var timeBird = 3;
+        var bulletBossArray=[];
+        var isboss;
+        function createEnemy() {
+            var enemy1 = new EnemyModel("images/enemy/ghost/move.gif","ghost",1100,parseInt(Math.random()*530),5,10,50);
+            if (timeBoss==1){
+                let enemy2 = new EnemyModel("images/enemy/boss/attack.gif","boss",900,parseInt(Math.random()*300),3,20,200);
+                enemyArray.push(enemy2);
+                bossArray.push(enemy2);
+                timeBoss=5;
+                isboss=setInterval(function () {
+                    let bullet = new BossBulletModel("images/enemy/boss/attackBall.gif",parseInt(enemy2.imgNode.style.left)-10,parseInt(enemy2.imgNode.style.top)+20,40);
+                    bulletBossArray.push(bullet);
+                    for(let n=0;n<bossArray.length;n++ ){
+                        if (bossArray[n].isDead==true){
+                            clearInterval(isboss);
+                            bossArray.splice(n,1);
+                        }
+                    }
+                },2000);
+            }
+
+            if (timeBird==1){
+                let enemy3 = new EnemyModel("images/enemy/bird/move.gif","bird",1000,parseInt(Math.random()*500),5,10,30);
+                enemyArray.push(enemy3);
+                timeBird=2;
+            }
+            if (timePlane==1){
+                let enemy4 = new EnemyModel("images/enemy/plane/move.gif","plane",1000,parseInt(Math.random()*500),5,10,40);
+                enemyArray.push(enemy4);
+                timePlane=3;
+            }
+            enemyArray.push(enemy1);
+            timeBoss--;
+            timeBird--;
+            timePlane--;
+        }
+
+
+        //移动敌方怪物
+        function moveEnemy() {
+            for (let i=0;i<enemyArray.length;i++){
+                if(enemyArray[i].isDead == true){
+                    enemyArray[i].deadTime-=1;
+                    if (enemyArray[i].deadTime==1){
+                        if(enemyArray[i].hasTreasure==true){
+                            enemyArray[i].imgNode.src="images/enemy/thing.gif";
+                        }
+                        else {
+                            mainScreen.removeChild(enemyArray[i].imgNode);
+                            enemyArray.splice(i,1);
+                        }
+
+                    }
+                }
+                else{
+                    if(parseInt(enemyArray[i].imgNode.style.left)<10){
+                        mainScreen.removeChild(enemyArray[i].imgNode);
+                        enemyArray.splice(i,1);
+                    }
+                    else {
+                        enemyArray[i].move();
+                        isPlayerCrash();
+                    }
+                }
+            }
+            // moveBossBullet();
+        }
+
+        //生成玩家
+        function createPlayer() {
+            player = new PlayerModel("images/dragon/small/move.gif",10);
+            setInterval(playerUpgrade,100);
+        }
+
+        //玩家升级
+        function playerUpgrade() {
+            if (player.isdead==false){
+                if(player.score>50&&player.score<100) {
+                    player.imgNode.src="images/dragon/middle/move.gif";
+                }
+                if(player.score>100&&player.score<150){
+                    player.imgNode.src="images/dragon/large/move.gif";
+                }
+                if(player.score>150){
+                    player.imgNode.src="images/dragon/final/move.gif";
+                }
+            }
+        }
+
+        //移动玩家
+        var bulletShoot=false;
+        //子弹间隔
+        var timer=20;
+        var topMove=false;
+        var leftMove=false;
+        var bottomMove=false;
+        var rightMove=false;
+        var bigSkillTime=10;
+        document.onkeydown=function(e){
+            //w:87  a:65  s:83 d:68
+            //up38 left37 down40 right39
+            /*if(e.keyCode==87|| e.keyCode==65|| e.keyCode==83|| e.keyCode==68){
+                playerMove= e.keyCode;
+            }*/
+            if (e.keyCode==38){
+                topMove=true;
+            }
+            if (e.keyCode==37){
+                leftMove=true;
+            }
+            if (e.keyCode==40){
+                bottomMove=true;
+            }
+            if (e.keyCode==39){
+                rightMove=true;
+            }
+            //空格:32
+            if(e.keyCode==32){
+                bulletShoot = true;
+            }
+            //enter:108
+            if (e.keyCode==13){
+                playSkill();
+            }
+        }
+        document.onkeyup=function(e){
+            if (e.keyCode==38){
+                topMove=false;
+            }
+            if (e.keyCode==37){
+                leftMove=false;
+            }
+            if (e.keyCode==40){
+                bottomMove=false;
+            }
+            if (e.keyCode==39){
+                rightMove=false;
+            }
+            //空格:32
+            if(e.keyCode==32){
+                bulletShoot = false;
+            }
+            //enter:13
+            if (e.keyCode==13){
+                player.skill-=1;
+                if (player.skill>=0){
+                    setTimeout(function () {
+                        bigSkill.style.display="none";
+                        continueTime();
+                    },3000)
+                }
+                if (player.skill<0){
+                    player.skill=0;
+                }
+                if (player.skill==0){
+                    powerImg.src="images/ui/boom/boom0.png"
+                }
+                if (player.skill==1){
+                    powerImg.src="images/ui/boom/boom1.png"
+                }
+                if (player.skill==2){
+                    powerImg.src="images/ui/boom/boom2.png"
+                }
+                if (player.skill==3){
+                    powerImg.src="images/ui/boom/boom3.png"
+                }
+                if (player.skill==4){
+                    powerImg.src="images/ui/boom/boom4.png"
+                }
+                if (player.skill==5){
+                    powerImg.src="images/ui/boom/boom5.png"
+                }
+                if (player.skill==6){
+                    powerImg.src="images/ui/boom/boom6.png"
+                }
+            }
+        }
+        function movePlayer() {
+            if(player.isdead==true){
+                player.deadTime--;
+                if (player.deadTime==1) {
+                    mainScreen.removeChild(player.imgNode);
+                }
+            }
+            else {
+                if (topMove){
+                    player.imgNode.style.top = parseInt(player.imgNode.style.top) - player.speed + "px";
+                    if (parseInt(player.imgNode.style.top)<0){
+                        player.imgNode.style.top = 0;
+                    }
+                }
+                if (leftMove){
+                    player.imgNode.style.left = parseInt(player.imgNode.style.left) - player.speed  + "px";
+                    if (parseInt(player.imgNode.style.left)<0){
+                        player.imgNode.style.left = 0;
+                    }
+                }
+                if (bottomMove){
+                    player.imgNode.style.top = parseInt(player.imgNode.style.top) + player.speed  + "px";
+                    if (parseInt(player.imgNode.style.top)>480){
+                        player.imgNode.style.top = 480 + "px";
+                    }
+                }
+                if (rightMove){
+                    player.imgNode.style.left = parseInt(player.imgNode.style.left) + player.speed  + "px";
+                    if (parseInt(player.imgNode.style.left)>1100){
+                        player.imgNode.style.left = 1100 + "px";
+                    }
+                }
+                if (bulletShoot){
+                    if(timer==20){
+                        createBullet(parseInt(player.imgNode.style.left)+100,parseInt(player.imgNode.style.top));
+                        timer=1;
+                    }
+                    else {
+                        timer++;
+                    }
+                }
+            }
+            // moveBullet();
+        }
+
+
+        //大招
+        function playSkill() {
+            if(player.skill!=0){
+                bigSkill.style.display="block";
+                stopTime();
+                for (let j=0;j<enemyArray.length;j++){
+                    if (enemyArray[j].enemyType=="ghost"){
+                        enemyArray[j].imgNode.src="images/enemy/ghost/die.gif";
+                        player.score+=10;
+                        let checkTreasure = Math.floor(Math.random()*3);
+                        if (checkTreasure==1){
+                            enemyArray[j].hasTreasure = true;
+                        }
+                    }
+                    else if (enemyArray[j].enemyType=="boss"){
+                        enemyArray[j].imgNode.src="images/enemy/boss/die.gif";
+                        player.score+=100;
+                        let checkTreasure = Math.floor(Math.random()*2);
+                        if (checkTreasure==1){
+                            enemyArray[j].hasTreasure = true;
+                        }
+                    }
+                    else if (enemyArray[j].enemyType=="plane"){
+                        enemyArray[j].imgNode.src="images/enemy/plane/die.gif";
+                        player.score+=20;
+                        let checkTreasure = Math.floor(Math.random()*3);
+                        if (checkTreasure==1){
+                            enemyArray[j].hasTreasure = true;
+                        }
+                    }
+                    else if (enemyArray[j].enemyType=="bird"){
+                        enemyArray[j].imgNode.src="images/enemy/bird/die.gif";
+                        player.score+=5;
+                        let checkTreasure = Math.floor(Math.random()*3);
+                        if (checkTreasure==1){
+                            enemyArray[j].hasTreasure = true;
+                        }
+                    }
+                    enemyArray[j].isDead = true;
+                }
+                scoreContent.innerHTML = player.score;
+            }
+        }
+        
+        //碰撞检测
+        function isCrash() {
+            for(let i= 0; i<bulletArray.length; i++){
+                for (let j = 0; j<enemyArray.length;j++){
+                    let t1=parseInt(bulletArray[i].imgNode.offsetTop);
+                    let l1=parseInt(bulletArray[i].imgNode.offsetLeft);
+                    let r1=parseInt(bulletArray[i].imgNode.offsetLeft+bulletArray[i].imgNode.offsetWidth);
+                    let b1=parseInt(bulletArray[i].imgNode.offsetTop+bulletArray[i].imgNode.offsetHeight);
+
+                    let t2=parseInt(enemyArray[j].imgNode.offsetTop);
+                    let l2=parseInt(enemyArray[j].imgNode.offsetLeft);
+                    let r2=parseInt(enemyArray[j].imgNode.offsetLeft+enemyArray[j].imgNode.offsetWidth);
+                    let b2=parseInt(enemyArray[j].imgNode.offsetTop+enemyArray[j].imgNode.offsetHeight);
+
+                    //除了这四种情况，其余都会撞到
+                    if (!(b1<t2||l1>r2||t1>b2||r1<l2)&&enemyArray[j].isDead==false){
+                        // mainScreen.removeChild(bulletArray[i].imgNode);
+                        // bulletArray.splice(i,1);
+                        bulletArray[i].isdead=true;
+                        enemyArray[j].life-=player.atk;
+                        if(enemyArray[j].life==0){
+                            if (enemyArray[j].enemyType=="ghost"){
+                                enemyArray[j].imgNode.src="images/enemy/ghost/die.gif";
+                                player.score+=10;
+                                let checkTreasure = Math.floor(Math.random()*4);
+                                if (checkTreasure==1){
+                                    enemyArray[j].hasTreasure = true;
+                                }
+                            }
+                            else if (enemyArray[j].enemyType=="boss"){
+                                enemyArray[j].imgNode.src="images/enemy/boss/die.gif";
+                                player.score+=100;
+                                let checkTreasure = Math.floor(Math.random()*2);
+                                if (checkTreasure==1){
+                                    enemyArray[j].hasTreasure = true;
+                                }
+                            }
+                            else if (enemyArray[j].enemyType=="plane"){
+                                enemyArray[j].imgNode.src="images/enemy/plane/die.gif";
+                                player.score+=20;
+                                let checkTreasure = Math.floor(Math.random()*4);
+                                if (checkTreasure==1){
+                                    enemyArray[j].hasTreasure = true;
+                                }
+                            }
+                            else if (enemyArray[j].enemyType=="bird"){
+                                enemyArray[j].imgNode.src="images/enemy/bird/die.gif";
+                                player.score+=5;
+                                let checkTreasure = Math.floor(Math.random()*4);
+                                if (checkTreasure==1){
+                                    enemyArray[j].hasTreasure = true;
+                                }
+                            }
+                            enemyArray[j].isDead = true;
+                            /*for(let n=0;n<bossArray.length;n++ ){
+                                if (bossArray[n]==enemyArray[j]){
+                                    console.log(bossArray[n].isDead);
+                                }
+                            }*/
+
+                        }
+                        scoreContent.innerHTML = player.score;
+                    }
+                }
+            }
+        }
+
+        //玩家碰撞检测
+        function isPlayerCrash() {
+            //判断玩家和b怪物碰撞
+            for (let j = 0; j<enemyArray.length;j++){
+                let t1=parseInt(player.imgNode.offsetTop);
+                let l1=parseInt(player.imgNode.offsetLeft);
+                let r1=parseInt(player.imgNode.offsetLeft+player.imgNode.offsetWidth);
+                let b1=parseInt(player.imgNode.offsetTop+player.imgNode.offsetHeight);
+
+                let t2=parseInt(enemyArray[j].imgNode.offsetTop);
+                let l2=parseInt(enemyArray[j].imgNode.offsetLeft);
+                let r2=parseInt(enemyArray[j].imgNode.offsetLeft+enemyArray[j].imgNode.offsetWidth);
+                let b2=parseInt(enemyArray[j].imgNode.offsetTop+enemyArray[j].imgNode.offsetHeight);
+
+                //除了这四种情况，其余都会撞到
+                if (!(b1<t2||l1>r2||t1>b2||r1<l2)&&enemyArray[j].isDead==false){
+                    if (enemyArray[j].enemyType=="ghost"){
+                        enemyArray[j].imgNode.src="images/enemy/ghost/die.gif";
+                        player.score+=10;
+                        player.bloodVolume-=5;
+                        hps.style.width = player.bloodVolume/100*hpLength + "px";
+                    }
+                    else if (enemyArray[j].enemyType=="boss"){
+                        enemyArray[j].imgNode.src="images/enemy/boss/die.gif";
+                        player.score+=100;
+                        player.bloodVolume-=20;
+                        hps.style.width = player.bloodVolume/100*hpLength + "px";
+
+                    }
+                    else if (enemyArray[j].enemyType=="plane"){
+                        enemyArray[j].imgNode.src="images/enemy/plane/die.gif";
+                        player.score+=20;
+                        player.bloodVolume-=3;
+                        hps.style.width = player.bloodVolume/100*hpLength + "px";
+                    }
+                    else if (enemyArray[j].enemyType=="bird"){
+                        enemyArray[j].imgNode.src="images/enemy/bird/die.gif";
+                        player.score+=5;
+                        player.bloodVolume-=2;
+                        hps.style.width = player.bloodVolume/100*hpLength + "px";
+                    }
+                    if (player.bloodVolume<=0){
+                        player.bloodVolume=0;
+                        hps.style.width = 0;
+                        player.imgNode.src="images/dragon/dead/die.gif";
+                        player.isdead = true;
+                        stopTime();
+                        myScore.innerHTML=player.score;
+                        gameOver.style.display="block";
+                    }
+                    enemyArray[j].isDead = true;
+                    scoreContent.innerHTML = player.score;
+                }
+                if (!(b1<t2||l1>r2||t1>b2||r1<l2)&&enemyArray[j].hasTreasure==true){
+                    enemyArray[j].treasureNumber=Math.floor(Math.random()*5);
+                    //当宝物数字为1，玩家加10点血
+                    if (enemyArray[j].treasureNumber==1){
+                        player.bloodVolume+=10;
+                        if(player.bloodVolume>=100){
+                            player.bloodVolume=100;
+                        }
+                        hps.style.width = player.bloodVolume/100*hpLength + "px";
+                    }
+                    if (enemyArray[j].treasureNumber==2) {
+                        player.atk+=1;
+                        if(player.atk>=10){
+                            player.atk=10;
+                        }
+                    }
+                    if (enemyArray[j].treasureNumber==3) {
+                        player.speed+=2;
+                        if(player.atk>=50){
+                            player.atk=50;
+                        }
+                    }
+                    if (enemyArray[j].treasureNumber==4) {
+                        player.skill+=1;
+                        if(player.skill>=7){
+                            player.skil=7;
+                        }
+                        if (player.skill==1){
+                            powerImg.src="images/ui/boom/boom1.png"
+                        }
+                        if (player.skill==2){
+                            powerImg.src="images/ui/boom/boom2.png"
+                        }
+                        if (player.skill==3){
+                            powerImg.src="images/ui/boom/boom3.png"
+                        }
+                        if (player.skill==4){
+                            powerImg.src="images/ui/boom/boom4.png"
+                        }
+                        if (player.skill==5){
+                            powerImg.src="images/ui/boom/boom5.png"
+                        }
+                        if (player.skill==6){
+                            powerImg.src="images/ui/boom/boom6.png"
+                        }
+                        if (player.skill==7){
+                            powerImg.src="images/ui/boom/boom7.png"
+                        }
+                    }
+                    enemyArray[j].hasTreasure=false;
+                    enemyArray[j].deadTime=2;
+                }
+
+            }
+
+            //判断玩家和boss子弹碰撞
+            for (let i=0;i<bulletBossArray.length;i++){
+                let t1=parseInt(player.imgNode.offsetTop);
+                let l1=parseInt(player.imgNode.offsetLeft);
+                let r1=parseInt(player.imgNode.offsetLeft+player.imgNode.offsetWidth);
+                let b1=parseInt(player.imgNode.offsetTop+player.imgNode.offsetHeight);
+
+                let t2=parseInt(bulletBossArray[i].imgNode.offsetTop);
+                let l2=parseInt(bulletBossArray[i].imgNode.offsetLeft);
+                let r2=parseInt(bulletBossArray[i].imgNode.offsetLeft+bulletBossArray[i].imgNode.offsetWidth);
+                let b2=parseInt(bulletBossArray[i].imgNode.offsetTop+bulletBossArray[i].imgNode.offsetHeight);
+
+
+                //除了这四种情况，其余都会撞到
+                if (!(b1<t2||l1>r2||t1>b2||r1<l2)&&bulletBossArray[i].isDead==false){
+                    bulletBossArray[i].imgNode.src="images/enemy/boss/attackHit.gif";
+                    player.bloodVolume-=20;
+                    hps.style.width = player.bloodVolume/100*hpLength + "px";
+
+                    if (player.bloodVolume<=0){
+                        player.bloodVolume=0;
+                        hps.style.width = 0;
+                        player.imgNode.src="images/dragon/dead/die.gif";
+                        player.isdead = true;
+                        stopTime();
+                        myScore.innerHTML=player.score;
+                        gameOver.style.display="block";
+                    }
+                    bulletBossArray[i].isDead = true;
+                }
+            }
+        }
+
+    </script>
+</body>
+</html>
